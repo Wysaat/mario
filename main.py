@@ -35,6 +35,7 @@ def main():
     platform_q = [load_image('platform-q1.png'), load_image('platform-q2.png'), 
                        load_image('platform-q3.png')]
     platform_air = load_image('platform-air.png')
+    platform_blue3 = load_image('platform-blue3.png')
     player = [load_image('mario1.png'), load_image('mario2.png'), load_image('mario3.png'),
                   load_image('mario4.png'), load_image('mario5.png'), load_image('mariodie.png')]
     fplayer = [pygame.transform.flip(p, 1, 0) for p in player]
@@ -172,7 +173,55 @@ def main():
     x_offs += platform_top.get_width() * 3
     for i in range(3):
         rects.append(platform_q[0].get_rect(topleft=(x_offs,ground_height-pipe_greenbig.get_height()*2)))
-        x_offs += platform_top.get_width()        
+        x_offs += platform_top.get_width()
+
+    x_offs += platform_top.get_width() * 4
+    for i in range(4):
+        if i == 1 or i == 2:
+            rects.append(platform_q[0].get_rect(topleft=(x_offs,ground_height-pipe_greenbig.get_height())))
+        rects.append(platform_q[0].get_rect(topleft=(x_offs,ground_height-pipe_greenbig.get_height()*2)))
+        x_offs += platform_top.get_width()
+
+    x_offs += platform_top.get_width() * 2
+    for i in range(4):
+        for j in range(i+1):
+            rects.append(platform_q[0].get_rect(topleft=(x_offs,ground_height-platform_q[0].get_height()*(j+1))))
+        x_offs += platform_top.get_width()
+
+    x_offs += platform_top.get_width() * 2
+    for i in range(4):
+        for j in range(4-i):
+            rects.append(platform_q[0].get_rect(topleft=(x_offs,ground_height-platform_q[0].get_height()*(j+1))))
+        x_offs += platform_top.get_width()
+
+    x_offs += platform_top.get_width() * 4
+    for i in range(4):
+        for j in range(i+1):
+            rects.append(platform_q[0].get_rect(topleft=(x_offs,ground_height-platform_q[0].get_height()*(j+1))))
+        x_offs += platform_top.get_width()
+    for i in range(4):
+        rects.append(platform_q[0].get_rect(topleft=(x_offs,ground_height-platform_q[0].get_height()*(i+1))))
+    x_offs += platform_top.get_width()
+
+    x_offs += platform_top.get_width() * 2
+    for i in range(4):
+        for j in range(4-i):
+            rects.append(platform_q[0].get_rect(topleft=(x_offs,ground_height-platform_q[0].get_height()*(j+1))))
+        x_offs += platform_top.get_width()
+
+    x_offs += platform_top.get_width() * 9
+    for i in range(4):
+        rects.append(platform_q[0].get_rect(topleft=(x_offs,ground_height-pipe_greenbig.get_height())))
+        x_offs += platform_top.get_width()
+
+    x_offs += platform_top.get_width() * 9
+    for i in range(8):
+        for j in range(i+1):
+            rects.append(platform_q[0].get_rect(topleft=(x_offs,ground_height-platform_q[0].get_height()*(j+1))))
+        x_offs += platform_top.get_width()
+    for i in range(8):
+        rects.append(platform_q[0].get_rect(topleft=(x_offs,ground_height-platform_q[0].get_height()*(i+1))))
+    x_offs += platform_top.get_width()
 
     rects.append(pipe1_r)
     rects.append(pipe2_r)
@@ -314,6 +363,59 @@ def main():
         for i in range(3):
             window.blit(platform_brick, (bias+x_offs,ground_height-pipe_greenbig.get_height()*2))
             x_offs += platform_top.get_width()
+
+        x_offs += platform_top.get_width() * 4
+        for i in range(4):
+            if i == 1 or i == 2:
+                window.blit(platform_q[0], (bias+x_offs,ground_height-pipe_greenbig.get_height()*2))
+                window.blit(platform_brick, (bias+x_offs,ground_height-pipe_greenbig.get_height()))
+            else:
+                window.blit(platform_brick, (bias+x_offs,ground_height-pipe_greenbig.get_height()*2))
+            x_offs += platform_top.get_width()
+
+        x_offs += platform_top.get_width() * 2
+        for i in range(4):
+            for j in range(i+1):
+                window.blit(platform_blue3, (bias+x_offs,ground_height-platform_q[0].get_height()*(j+1)))
+            x_offs += platform_top.get_width()
+
+        x_offs += platform_top.get_width() * 2
+        for i in range(4):
+            for j in range(4-i):
+                window.blit(platform_blue3, (bias+x_offs,ground_height-platform_q[0].get_height()*(j+1)))
+            x_offs += platform_top.get_width()
+
+        x_offs += platform_top.get_width() * 4
+        for i in range(4):
+            for j in range(i+1):
+                window.blit(platform_blue3, (bias+x_offs,ground_height-platform_q[0].get_height()*(j+1)))
+            x_offs += platform_top.get_width()
+        for i in range(4):
+            window.blit(platform_blue3, (bias+x_offs,ground_height-platform_q[0].get_height()*(i+1)))
+        x_offs += platform_top.get_width()
+
+        x_offs += platform_top.get_width() * 2
+        for i in range(4):
+            for j in range(4-i):
+                window.blit(platform_blue3, (bias+x_offs,ground_height-platform_q[0].get_height()*(j+1)))
+            x_offs += platform_top.get_width()
+
+        x_offs += platform_top.get_width() * 9
+        for i in range(4):
+            if i == 2:
+                window.blit(platform_q[0], (bias+x_offs,ground_height-pipe_greenbig.get_height()))
+            else:
+                window.blit(platform_brick, (bias+x_offs,ground_height-pipe_greenbig.get_height()))
+            x_offs += platform_top.get_width()
+
+        x_offs += platform_top.get_width() * 9
+        for i in range(8):
+            for j in range(i+1):
+                window.blit(platform_blue3, (bias+x_offs,ground_height-platform_q[0].get_height()*(j+1)))
+            x_offs += platform_top.get_width()
+        for i in range(8):
+            window.blit(platform_blue3, (bias+x_offs,ground_height-platform_q[0].get_height()*(i+1)))
+        x_offs += platform_top.get_width()
 
         if slub1_killed:
             if scnt == 40:
