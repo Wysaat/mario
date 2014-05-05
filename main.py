@@ -23,6 +23,19 @@ def color_surface(surface, red, green, blue):
     array[:,:,1] = green
     array[:,:,2] = blue
 
+class Slub(object):
+    def __init__(self, x, y, imag):
+        self.killed = 0
+        self.dead = 0
+        self.x = x
+        self.y = y
+        self.cnt = 0
+        self.cur_imag = imag
+        self.rect = imag.get_rect(topleft=(x, y))
+        self.speed = 2
+
+white = (255, 255, 255)
+
 def main():
     clock = pygame.time.Clock()
     pygame.init()
@@ -55,6 +68,12 @@ def main():
 
     map_length = platform_top.get_width() * 211
 
+    font1 = pygame.font.Font('data/fonts/font.ttf', player[0].get_height()/2-1)
+    line1 = font1.render("Mario", 0, white)
+    line2 = font1.render("Score"+"000000", 0, white)
+    line3 = font1.render("x00", 0, white)
+    line4 = font1.render("x3", 0, white)
+
     ground_height = window.get_height()-2*platform_top.get_height()
     count = 0
     px = 0
@@ -71,21 +90,55 @@ def main():
     ctime = 0
     key_up = 0
     first_added = 0
+    slub_speed = 2
     pipe1x = offset(448, map_length)
     slub1_x = offset(348, map_length)
     slub1_y = ground_height-slub[0].get_height()
-    slub1_speed = 2
+    slub2_x = offset(690, map_length)
+    slub2_y = ground_height-slub[0].get_height()
+    slub3_x = offset(850, map_length)
+    slub4_x = offset(875, map_length)
+    slub5_x = offset(1315, map_length)
+    slub5_y = slub1_y-pipe_greenbig.get_height()*2
+    slub6_x = offset(1525, map_length)
+    slub6_y = slub1_y
+    slub7_x = offset(1550, map_length)
+    slub7_y = slub1_y
+    slub8_x = offset(1980, map_length)
+    slub8_y = slub1_y
+    slub9_x = offset(2005, map_length)
+    slub9_y = slub1_y
+    slub10_x = offset(2040, map_length)
+    slub10_y = slub1_y
+    slub11_x = offset(2065, map_length)
+    slub11_y = slub1_y
+    slub12_x = offset(2780, map_length)
+    slub12_y = slub1_y
+    slub13_x = offset(2805, map_length)
+    slub13_y = slub1_y
 
-    slub1_r = slub[0].get_rect(topleft=(slub1_x, slub1_y))
-    cslub1 = slub[0]
-    slub1_killed = 0
-    slub1_dead = 0
-    scnt = 0
+    slubs = []
+    slubs.append(Slub(slub1_x ,slub1_y, slub[0]))
+    slubs.append(Slub(slub2_x, slub2_y, slub[0]))
+    slubs.append(Slub(slub3_x, slub1_y, slub[0]))
+    slubs.append(Slub(slub4_x, slub1_y, slub[0]))
+    slubs.append(Slub(slub5_x, slub5_y, slub[0]))
+    slubs.append(Slub(slub6_x ,slub6_y, slub[0]))
+    slubs.append(Slub(slub7_x, slub7_y, slub[0]))
+    slubs.append(Slub(slub8_x, slub8_y, slub[0]))
+    slubs.append(Slub(slub9_x, slub9_y, slub[0]))
+    slubs.append(Slub(slub10_x, slub10_y, slub[0]))
+    slubs.append(Slub(slub11_x, slub11_y, slub[0]))
+    slubs.append(Slub(slub12_x, slub12_y, slub[0]))
+    slubs.append(Slub(slub13_x, slub13_y, slub[0]))
+
     player_killed = 0
     player_dead = 0
     pcnt = 0
 
     rects = []
+
+    slub_barriers = []
 
     player_r = player[0].get_rect(topleft=(px,py))
     pipe1_r = pipe_greenbig.get_rect(topleft=
@@ -112,8 +165,11 @@ def main():
                   (offset(320, map_length)+platform_q[0].get_width()*3,ground_height-pipe_greenbig.get_height()))
     pform6_r = platform_q[0].get_rect(topleft=
                   (offset(320, map_length)+platform_q[0].get_width()*4,ground_height-pipe_greenbig.get_height()))
+    pform7_r = platform_q[0].get_rect(topleft=
+              (offset(320, map_length)+platform_q[0].get_width()*2,ground_height-pipe_greenbig.get_height()*2))
     pftops = []
     x_offs = 0
+
     for i in range(69):
         pftops.append(platform_top.get_rect(topleft=(x_offs,window.get_height()-platform_top.get_height())))       
         pftops.append(platform_top.get_rect(topleft=(x_offs,window.get_height()-2*platform_top.get_height())))
@@ -123,7 +179,9 @@ def main():
         pftops.append(platform_top.get_rect(topleft=(x_offs,window.get_height()-platform_top.get_height())))       
         pftops.append(platform_top.get_rect(topleft=(x_offs,window.get_height()-2*platform_top.get_height())))
         x_offs += platform_top.get_width()
-    x_offs += platform_top.get_width() * 3
+    x_offs += platform_top.get_width() * 2
+    slub_barriers.append(platform_top.get_rect(topleft=(x_offs,window.get_height()-platform_top.get_height()*3)))
+    x_offs += platform_top.get_width()
     for i in range(64):
         pftops.append(platform_top.get_rect(topleft=(x_offs,window.get_height()-platform_top.get_height())))       
         pftops.append(platform_top.get_rect(topleft=(x_offs,window.get_height()-2*platform_top.get_height())))
@@ -134,16 +192,20 @@ def main():
         pftops.append(platform_top.get_rect(topleft=(x_offs,window.get_height()-2*platform_top.get_height())))
         x_offs += platform_top.get_width()
 
-    slub1_r = slub[0].get_rect(topleft=((offset(348, map_length),ground_height-slub[0].get_height())))
+    rects.append(platform_q[0].get_rect(topleft=(platform_top.get_width()*64,ground_height-pipe_greenbig.get_height()-platform_top.get_height())))
 
     x_offs = platform_top.get_width() * 77
     for i in range(3):
+        if i == 2:
+            slub_barriers.append(platform_top.get_rect(topleft=(x_offs,ground_height-pipe_greenbig.get_height()*2-platform_top.get_height())))
         rects.append(platform_q[0].get_rect(topleft=(x_offs,ground_height-pipe_greenbig.get_height())))
         x_offs += platform_top.get_width()
 
     for i in range(8):
         rects.append(platform_q[0].get_rect(topleft=(x_offs,ground_height-pipe_greenbig.get_height()*2)))
         x_offs += platform_top.get_width()
+
+    slub_barriers.append(platform_top.get_rect(topleft=(x_offs,ground_height-pipe_greenbig.get_height()*2-platform_top.get_height())))
 
     x_offs += platform_top.get_width() * 3
     for i in range(3):
@@ -235,7 +297,17 @@ def main():
     rects.append(pform4_r)
     rects.append(pform5_r)
     rects.append(pform6_r)
+    rects.append(pform7_r)
     rects.extend(pftops)
+
+    pipes = []
+    pipes.append(pipe1_r)
+    pipes.append(pipe2_r)
+    pipes.append(pipe3_r)
+    pipes.append(pipe4_r)
+    pipes.append(pipe5_r)
+    pipes.append(pipe6_r)
+    slub_barriers += pipes
 
     xxx = 0
     while True:
@@ -314,6 +386,8 @@ def main():
         window.blit(platform_q[0], (bias+offset(257, map_length), ground_height-pipe_greenbig.get_height()))
         x_offs = 0
         for i in range(5):
+            if i == 2:
+                window.blit(platform_q[0], (bias+offset(320, map_length)+x_offs, ground_height-pipe_greenbig.get_height()*2))
             if i % 2:
                 platform_basic = platform_q[0]
             else:
@@ -338,6 +412,8 @@ def main():
         for i in range(3):
             window.blit(platform_brick, (bias+x_offs,ground_height-pipe_greenbig.get_height()*2))
             x_offs += platform_basic.get_width()
+
+        window.blit(platform_air, (bias+platform_top.get_width()*64,ground_height-pipe_greenbig.get_height()-platform_top.get_height()))
 
         window.blit(platform_q[0], (bias+x_offs,ground_height-pipe_greenbig.get_height()*2))
         window.blit(platform_brick, (bias+x_offs,ground_height-pipe_greenbig.get_height()))
@@ -417,14 +493,27 @@ def main():
             window.blit(platform_blue3, (bias+x_offs,ground_height-platform_q[0].get_height()*(i+1)))
         x_offs += platform_top.get_width()
 
-        if slub1_killed:
-            if scnt == 40:
-                slub1_dead = 1
-            if scnt%10 < 5:
-                cslub1 = slub[0]
-            else:
-                cslub1 = slub[2]
-            scnt += 1
+        window.blit(player[0], (18, 16))
+        window.blit(line1, (18+player[0].get_width()+7, 16))
+        window.blit(line2, (18+player[0].get_width()+7, 16+line1.get_height()))
+        hoffs = 18+player[0].get_width()+7+line2.get_width()+7
+        window.blit(coin[0], (hoffs, 10))
+        hoffs += coin[0].get_width()
+        window.blit(line3, (hoffs, 16))
+        hoffs += line3.get_width()+14
+        window.blit(player[4], (hoffs, 16))
+        hoffs += player[4].get_width()+2
+        window.blit(line4, (hoffs, 16+7))
+
+        for _slub in slubs:
+            if _slub.killed:
+                if _slub.cnt == 40:
+                    _slub.dead = 1
+                if _slub.cnt%10 < 5:
+                    _slub.cur_imag = slub[0]
+                else:
+                    _slub.cur_imag = slub[2]
+                _slub.cnt += 1
 
         if player_killed:
             if not pcnt:
@@ -435,8 +524,9 @@ def main():
                 player_dead = 1
             pcnt += 1
 
-        if not slub1_dead:
-            window.blit(cslub1, (bias+slub1_x, slub1_y))
+        for _slub in slubs:
+            if not _slub.dead:
+                window.blit(_slub.cur_imag, (bias+_slub.x, _slub.y))
         if not player_dead:
             window.blit(cplayer, (bias+px, py))
 
@@ -512,30 +602,37 @@ def main():
         else:
             bias = 0
 
-        if count%22 < 11: cslub1 = slub[0]
-        else: cslub1 = slub[1]
-        if not slub1_killed:
-            slub1_x += slub1_speed
-            slub1_r.move_ip(slub1_speed ,0)
-        if slub1_r.colliderect(pipe1_r):
-            slub1_speed = -slub1_speed
-            slub1_x += pipe1_r.left - slub1_r.right
-            slub1_r.right = pipe1_r.left
-        if slub1_x < 0:
-            slub1_speed = -slub1_speed
-            slub1_x = 0
-            slub1_r.left = 0
+        for _slub in slubs:
+            if count%22 < 11: _slub.cur_imag = slub[0]
+            else: _slub.cur_imag = slub[1]
+            if not _slub.killed:
+                _slub.x += _slub.speed
+                _slub.rect.move_ip(_slub.speed, 0)
+            for rect in slub_barriers:
+                if _slub.rect.colliderect(rect):
+                    if _slub.speed > 0:
+                        _slub.x += rect.left - _slub.rect.right
+                        _slub.rect.right = rect.left
+                    else:
+                        _slub.x -= _slub.rect.left - rect.right
+                        _slub.rect.left = rect.right
+                    _slub.speed = -_slub.speed
+            if _slub.x < 0:
+                _slub.x = 0
+                _slub.speed = -_slub.speed
+                _slub.rect.left = 0
+
+        for _slub in slubs:
+            if not _slub.killed:
+                if player_r.colliderect(_slub.rect):
+                    if jump_speed < 0:
+                        _slub.killed = 1
+                        jump_speed = 10
+                    else:
+                        player_killed = 1
 
         px += dx
         py += dy
-
-        if not slub1_killed:
-            if player_r.colliderect(slub1_r):
-                if jump_speed < 0:
-                    slub1_killed = 1
-                    jump_speed = 10
-                else:
-                    player_killed = 1
 
         pygame.display.update()
 
