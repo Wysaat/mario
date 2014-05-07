@@ -36,7 +36,10 @@ class Slub(object):
 
 white = (255, 255, 255)
 
-def main():
+def main(lives, score, coin_num):
+    game_time = 400
+
+    fps = 60
     clock = pygame.time.Clock()
     pygame.init()
     window = pygame.display.set_mode((640, 480))
@@ -69,10 +72,6 @@ def main():
     map_length = platform_top.get_width() * 211
 
     font1 = pygame.font.Font('data/fonts/font.ttf', player[0].get_height()/2-1)
-    line1 = font1.render("Mario", 0, white)
-    line2 = font1.render("Score"+"000000", 0, white)
-    line3 = font1.render("x00", 0, white)
-    line4 = font1.render("x3", 0, white)
 
     ground_height = window.get_height()-2*platform_top.get_height()
     count = 0
@@ -313,6 +312,14 @@ def main():
     while True:
         xxx += 1
         dx = dy = 0
+
+        line1 = font1.render("Mario", 0, white)
+        line2 = font1.render("Score"+"%06d"%score, 0, white)
+        line3 = font1.render("x%02d"%coin_num, 0, white)
+        line4 = font1.render("x%d"%lives, 0, white)
+        line5 = font1.render("FPS    "+str(int(clock.get_fps())), 0, white)
+        line6 = font1.render("Time: %03d"%game_time, 0, white)
+
         window.blit(background, (0, 0))
 
         window.blit(pipe_green, (bias+offset(609, map_length), ground_height-pipe_green.get_height()))
@@ -504,11 +511,15 @@ def main():
         window.blit(player[4], (hoffs, 16))
         hoffs += player[4].get_width()+2
         window.blit(line4, (hoffs, 16+7))
+        hoffs += 100
+        window.blit(line5, (hoffs, 16));
+        window.blit(line6, (hoffs, 16+line5.get_height()))
 
         for _slub in slubs:
             if _slub.killed:
                 if _slub.cnt == 40:
                     _slub.dead = 1
+                    score += 100
                 if _slub.cnt%10 < 5:
                     _slub.cur_imag = slub[0]
                 else:
@@ -522,6 +533,9 @@ def main():
                 color_surface(cplayer, 255, 255, 255)
             if pcnt == 80:
                 player_dead = 1
+                lives -= 1
+                if lives > 0:
+                    main(lives, score, coin_num)
             pcnt += 1
 
         for _slub in slubs:
@@ -532,7 +546,7 @@ def main():
 
         ctime = Time.time()
 
-        time = clock.tick(60)
+        time = clock.tick(fps)
 
         events = pygame.event.get()
         for event in events:
@@ -636,5 +650,7 @@ def main():
 
         pygame.display.update()
 
+        game_time -= 0.060
+
 if __name__ == '__main__':
-    main()
+    main(3, 0, 0)
